@@ -1,29 +1,23 @@
-# Hi, I'm Lu-Ricardo-Y 👋
+**English** · [简体中文](./README.zh-CN.md)
 
-I build practical AI agents that answer with evidence, take actions with human approval, and make their behavior measurable. My current focus is RAG, tool-using agents, and reliable execution with Python and Go.
+# Lu-Ricardo-Y
 
-我关注能引用依据、在关键写操作前请求人工确认，并能通过评测检验效果的 AI Agent 系统。
+I work on AI agents and RAG systems. The part that interests me most is what surrounds a model response: where the evidence came from, when the system should say it does not know, what an agent is allowed to change, and how to test those decisions. I mostly build with Python and Go.
 
-## Featured projects
+## Merchant Support Agent
 
-### 🛍️ [Merchant Support Agent](https://github.com/Lu-Ricardo-Y/merchant-support-agent) · RAG → answer → approved action
+This is the project I would show first. I built an e-commerce support agent that goes from policy retrieval and answering to ticket handling, using sample policies, orders, and tickets. It is a local demonstration rather than an integration with a live commerce platform.
 
-An end-to-end e-commerce support Agent using sample policy documents and a local ticket store. It connects knowledge retrieval, evidence-grounded responses, ticket workflows, and evaluation in one inspectable system.
+I started with policy documents that carry version, status, and section metadata, then assembled 120 hand-labeled cases covering ordinary questions, exceptions, conflicting policy versions, missing evidence, tool calls, and approval before writes. For retrieval, I use BM25 alongside a local BGE embedding model and Qdrant. BM25 handles exact policy terms, numbers, and version references well; vector search helps with conversational phrasing. RRF combines their rankings.
 
-- **Grounded answers:** Combines BM25 and Qdrant vector retrieval with RRF. Qwen responses are tied to retrieved policies with backend-controlled citations; the system can decline when evidence is insufficient.
-- **Human-approved actions:** The Agent can check ticket status and prepare ticket creation. A new SQLite ticket is written only after explicit user confirmation, with parameter validation and idempotency checks.
-- **Evaluation and delivery:** Includes separate development/test data, retrieval and generation checks, Agent run traces, Docker setup, and [demo screenshots](https://github.com/Lu-Ricardo-Y/merchant-support-agent/tree/main/docs/images).
+Qwen writes the answer, but it does not get to invent its sources. The backend checks whether the retrieved material supports the question and builds citations from the documents actually found. If a question adds a condition the policies do not cover, the system can decline instead of making a confident promise. On the action side, the agent can look up tickets and prepare a new one. Creation stays pending until the user confirms; the tool checks that state again before writing to SQLite, with parameter validation and an idempotency key to prevent duplicate writes.
 
-This is the project that best represents my interest in building useful AI agents with clear evidence, controlled tools, and testable behavior.
+I kept the rough edges in the evaluation report. On the first held-out test, hybrid retrieval reached **94.59% Recall@5**, while RAG behavior matching was **75%**. A request phrased as “create a high-priority ticket” also exposed a gap in intent routing. I added those failures to regression tests and kept the original test results visible instead of replacing them with post-fix numbers. The repository includes Docker setup, a demo page, run traces, and scripts for retrieval, answer, and agent-route evaluation.
 
-### 🔐 [AgentGate](https://github.com/Lu-Ricardo-Y/AgentGate) · safer Agent execution
+[Code](https://github.com/Lu-Ricardo-Y/merchant-support-agent) · [Evaluation results and failure analysis](https://github.com/Lu-Ricardo-Y/merchant-support-agent/blob/main/docs/RESULTS.md) · [Demo screenshots](https://github.com/Lu-Ricardo-Y/merchant-support-agent/tree/main/docs/images)
 
-A Go-based reference implementation using a local Ollama model. It explores tenant-aware authorization, human approval for writes, audit trails, replay protection, and explicit failure handling. Developed collaboratively with [@kimzclandi](https://github.com/kimzclandi); [contributions are documented](https://github.com/Lu-Ricardo-Y/AgentGate/blob/main/AUTHORS.md).
+## Other projects
 
-### 📈 [Bearing Fault Diagnosis](https://github.com/Lu-Ricardo-Y/bearing-fault-diagnosis) · reproducible applied ML
+**[AgentGate](https://github.com/Lu-Ricardo-Y/AgentGate)** is a Go reference implementation for safer agent execution with a local Ollama model. It focuses on tenant and resource permissions, approval for writes, audit records, and failure handling. I worked on it with [@kimzclandi](https://github.com/kimzclandi); the [contribution notes](https://github.com/Lu-Ricardo-Y/AgentGate/blob/main/AUTHORS.md) are in the repository.
 
-A collaborative fork built around CWRU vibration data, signal processing, Random Forest and 1D CNN diagnosis, physical-frequency features, robustness tests, and a Streamlit demo. Its health index describes deviation within recordings; it does not claim remaining-useful-life prediction.
-
----
-
-**Interests:** AI Agents · RAG · evaluation · human-in-the-loop systems · Python · Go
+**[Bearing Fault Diagnosis](https://github.com/Lu-Ricardo-Y/bearing-fault-diagnosis)** is a collaborative fork using CWRU vibration data for signal processing, bearing-fault classification, physical-frequency features, and robustness tests, with a Streamlit demo. Its health index describes changes within a recording; it is not presented as a remaining-useful-life predictor.
